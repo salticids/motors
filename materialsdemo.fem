@@ -1,0 +1,84 @@
+[Format]      =  4.0
+[Frequency]   =  0
+[Precision]   =  1e-008
+[MinAngle]    =  30
+[DoSmartMesh] =  1
+[Depth]       =  1
+[LengthUnits] =  inches
+[ProblemType] =  planar
+[Coordinates] =  cartesian
+[ACSolver]    =  0
+[PrevType]    =  0
+[PrevSoln]    =  ""
+[Comment]     =  "Add comments here."
+[PointProps]   = 0
+[BdryProps]   = 0
+[BlockProps]  = 3
+  <BeginBlock>
+    <BlockName> = "Air"
+    <Mu_x> = 1
+    <Mu_y> = 1
+    <H_c> = 0
+    <H_cAngle> = 0
+    <J_re> = 0
+    <J_im> = 0
+    <Sigma> = 0
+    <d_lam> = 0
+    <Phi_h> = 0
+    <Phi_hx> = 0
+    <Phi_hy> = 0
+    <LamType> = 0
+    <LamFill> = 1
+    <NStrands> = 0
+    <WireD> = 0
+    <BHPoints> = 0
+  <EndBlock>
+  <BeginBlock>
+    <BlockName> = "NdFeB 32 MGOe"
+    <Mu_x> = 1.0449999999999999
+    <Mu_y> = 1.0449999999999999
+    <H_c> = 883310
+    <H_cAngle> = 0
+    <J_re> = 0
+    <J_im> = 0
+    <Sigma> = 0.69399999999999995
+    <d_lam> = 0
+    <Phi_h> = 0
+    <Phi_hx> = 0
+    <Phi_hy> = 0
+    <LamType> = 0
+    <LamFill> = 1
+    <NStrands> = 0
+    <WireD> = 0
+    <BHPoints> = 0
+  <EndBlock>
+  <BeginBlock>
+    <BlockName> = "18 AWG"
+    <Mu_x> = 1
+    <Mu_y> = 1
+    <H_c> = 0
+    <H_cAngle> = 0
+    <J_re> = 0
+    <J_im> = 0
+    <Sigma> = 58
+    <d_lam> = 0
+    <Phi_h> = 0
+    <Phi_hx> = 0
+    <Phi_hy> = 0
+    <LamType> = 3
+    <LamFill> = 1
+    <NStrands> = 1
+    <WireD> = 1.0239652968433499
+    <BHPoints> = 0
+  <EndBlock>
+[CircuitProps]  = 0
+[NumPoints] = 2
+6.1299999999999999	5.2199999999999998	0	0
+2.5600000000000001	9.0500000000000007	0	0
+[NumSegments] = 0
+[NumArcSegments] = 0
+[NumHoles] = 0
+[NumBlockLabels] = 3
+5.5300000000000002	5.5099999999999998	1	-1	0	0	0	1	0
+6.8300000000000001	5.5499999999999998	2	-1	0	0	0	1	0
+6.2400000000000002	6.1100000000000003	3	-1	0	0	0	1	0
