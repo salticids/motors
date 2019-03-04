@@ -26,10 +26,10 @@ def addLine(r1, phi1, r2, phi2):
     n2 = cm.rect(r2, rad(phi2))
     femm.mi_addsegment(n1.real, n1.imag, n2.real, n2.imag)
 
-def setMat(r, phi, mat):
+def setMat(r, phi, mat, group=0):
     n = cm.rect(r, rad(phi))
     femm.mi_selectlabel(n.real, n.imag)
-    femm.mi_setblockprop(mat, 1, 0, '<None>', 0, 0, 0)
+    femm.mi_setblockprop(mat, 1, 0, '<None>', 0, group, 0)
     femm.mi_clearselected()
 
 def setCirc(r, phi, mat, circuit, turns):
@@ -38,10 +38,10 @@ def setCirc(r, phi, mat, circuit, turns):
     femm.mi_setblockprop(mat, 1, 0, circuit, 0, 0, turns)
     femm.mi_clearselected()
 
-def setMagnet(r, phi, mat, magdir):
+def setMagnet(r, phi, mat, magdir, group=0):
     n = cm.rect(r, rad(phi))
     femm.mi_selectlabel(n.real, n.imag)
-    femm.mi_setblockprop(mat, 1, 0, '<None>', magdir, 0, 0)
+    femm.mi_setblockprop(mat, 1, 0, '<None>', magdir, group, 0)
     femm.mi_clearselected()
 
 # Number of magnets, 
@@ -77,9 +77,9 @@ def rotor(Nm, Mfrac, rsh, rr, hm, matRotor, matMagnet, magnetBlockLabels):
         magnetBlockLabels.append([(rr + rr + hm) / 2., phi])
         addBlockLabel(magnetBlockLabels[len(magnetBlockLabels)-1][0],magnetBlockLabels[len(magnetBlockLabels)-1][1])
         if i % 2 == 0:
-            setMagnet(magnetBlockLabels[len(magnetBlockLabels)-1][0],magnetBlockLabels[len(magnetBlockLabels)-1][1], matMagnet, phi)
+            setMagnet(magnetBlockLabels[len(magnetBlockLabels)-1][0],magnetBlockLabels[len(magnetBlockLabels)-1][1], matMagnet, phi, 1)
         else:
-            setMagnet(magnetBlockLabels[len(magnetBlockLabels)-1][0],magnetBlockLabels[len(magnetBlockLabels)-1][1], matMagnet, phi - 180.)
+            setMagnet(magnetBlockLabels[len(magnetBlockLabels)-1][0],magnetBlockLabels[len(magnetBlockLabels)-1][1], matMagnet, phi - 180., 1)
 
         
         r = rr + hm
@@ -101,7 +101,7 @@ def rotor(Nm, Mfrac, rsh, rr, hm, matRotor, matMagnet, magnetBlockLabels):
         setMat(0, 0, 'Air')
     # rotor body block label
     addBlockLabel((rsh + rr) / 2., 0)
-    setMat((rsh + rr) / 2., 0, 'M-27 Steel')
+    setMat((rsh + rr) / 2., 0, 'M-27 Steel', 1)
 
 
 # number of teeth,
@@ -223,9 +223,11 @@ def airgap(ri, ro):
 ### Single Layer Winding
 def singlelayerwind(poles, windings, circuits, coilBlockLabels):
     polarity = 1
-    slots = len(coilBlockLabels) / 2
-    for index in range(int(len(coilBlockLabels) / 2)):
-        coil = int(((slots + 1 - index) % slots) / 2)
-        setCirc(coilBlockLabels[2*index][0], coilBlockLabels[2*index][1], '18 AWG', circuits[coil], windings*polarity)
-        setCirc(coilBlockLabels[2*index+1][0], coilBlockLabels[2*index+1][1], '18 AWG', circuits[coil], windings*polarity)
-        polarity = polarity * (-1)
+    n = len(coilBlockLabels)
+    for index in range(n):
+        coilindex = int(((index % (n-2))+2)/4) 
+        # coil = int(((slots + 1 - index) % slots) / 2)
+        setCirc(coilBlockLabels[index][0], coilBlockLabels[index][1], '18 AWG', circuits[coilindex], windings*polarity)
+        # setCirc(coilBlockLabels[index+1][0], coilBlockLabels[index+1][1], '18 AWG', circuits[coil], windings*polarity)
+        if(index%2 == 1):
+            polarity = polarity * (-1)
