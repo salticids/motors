@@ -33,6 +33,10 @@ def setMat(r, phi, mat, group=0):
     femm.mi_selectlabel(n.real, n.imag)
     femm.mi_setblockprop(mat, 1, 0, '<None>', 0, group, 0)
     femm.mi_clearselected()
+def setMatxy(x, y, mat, group=0):
+    femm.mi_selectlabel(x, y)
+    femm.mi_setblockprop(mat, 1, 0, '<None>', 0, group, 0)
+    femm.mi_clearselected()
 
 def setCirc(r, phi, mat, circuit, turns):
     n = cm.rect(r, rad(phi))

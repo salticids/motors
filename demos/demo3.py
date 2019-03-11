@@ -24,9 +24,9 @@ femm.mi_addcircprop('C', 0, 1)
 circuits = ['A', 'B', 'C']
 femm.smartmesh(0) # turn off smartmeshing (dirty coarsen mesh line)
 
-rotor(Nm, Mfrac, rsh, rr, hm, 'M-27 Steel', 'NdFeB 52 MGOe', magnetBlockLabels)
-stator(Nt, Tfrac, rti, ht, bt, hs, hstator, coilBlockLabels)
-airgap(rr+hm, rti)
+rotor(20, .95, rsh, 60, hm, 'M-27 Steel', 'NdFeB 52 MGOe', magnetBlockLabels)
+stator(18, .9, 75, 10, 15, 40, 30, coilBlockLabels)
+airgap(60+hm, 75)
 doublelayerwind(3, 100, circuits, coilBlockLabels)
 femm.mi_makeABC()
 
