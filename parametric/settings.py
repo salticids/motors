@@ -1,5 +1,5 @@
 ### Global settings
-updateInstant = True
+updateInstant = False
 
 ### FEMM Groups
 groupMode = -1
@@ -15,6 +15,17 @@ hs = 30
 tfrac = 0.8
 cfrac = 0.6
 statorOOD = False # Stator out of date
+statorSingle = True # Draw one single tooth
+
+### ROTOR PARAMETERS
+Nm = 6
+rsh = 5
+rr = 20
+hm = 10
+dm = 5
+mfrac = 0.8
+rotorOOD = False
+rotorSingle = True
 
 # ### MOTOR PARAMETERS
 # Nm = 4 # number of rotor magnets

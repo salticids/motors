@@ -69,13 +69,45 @@ def statorTooth(Nt = s.Nt, rag = s.rag, wt = s.wt, bt = float(s.bt), hs = s.hs, 
     # glob['groupMode'] = -1
     s.groupMode = -1
 
-def rotorTooth():
+def rotorTooth(Nm = s.Nm, rsh = s.rsh, rr = s.rr, hm = s.hm, dm = s.dm, mfrac = s.mfrac):
     # Let everything drawn be in rotorGroup
     s.groupMode = s.rotorGroup
 
+    # Find tooth phase
+    phi = 360./Nm
+
+    ### Draw shaft region
+    addNode(rsh, phi/2.)
+    addNode(rsh, -phi/2.)
+    addArc(rsh, -phi/2., rsh, phi/2.)
+
+    ### Draw magnet
+    r = rr - dm
+    phiM = mfrac * phi
+    # Interior surface
+    addNode(r, phiM/2.)
+    addNode(r, -phiM/2.)
+    addArc(r, -phiM/2., r, phiM/2.)
+    # Exterior surface
+    r = rr - dm + hm
+    addNode(r, phiM/2.)
+    addNode(r, -phiM/2.)
+    addArc(r, -phiM/2., r, phiM/2.)
+    # Counterclockwise surface
+    addLine(rr - dm, phiM/2., rr - dm + hm, phiM/2.)
+    # Clockwise surface
+    addLine(rr - dm, -phiM/2., rr - dm + hm, -phiM/2.)
+
+    ### Draw rotor boundary
+    # Counterclockwise segment
+    addNode(rr, phiM/2.)
+    addNode(rr, phi/2.)
+    addArc(rr, phiM/2., rr, phi/2.)
+    # Clockwise segment
+    addNode(rr, -phiM/2.)
+    addNode(rr, -phi/2.)
+    addArc(rr, -phi/2., rr, -phiM/2.)
     
-
-
     # Clear groupmode
     s.groupMode = -1 
 
@@ -85,11 +117,18 @@ def revolveStator(Nt):
     femm.mi_copyrotate(0, 0, phi, Nt-1)
     femm.mi_clearselected()
 
+def revolveRotor(Nm):
+    femm.mi_selectgroup(s.rotorGroup)
+    phi = 360./Nm
+    femm.mi_copyrotate(0, 0, phi, Nm-1)
+    femm.mi_clearselected()
+
 def initFemm(depth = 50):
     femm.openfemm()
     femm.newdocument(0)
     femm.mi_probdef(0, 'millimeters', 'planar', 1.e-8, depth, 30)
     femm.mi_hidegrid()
+    femm.smartmesh(0) # coarsens mesh
     femm.mi_saveas('parametric.fem')
 
 def deinitFemm():
@@ -97,8 +136,9 @@ def deinitFemm():
 
 def main():
     initFemm()
-    statorTooth(6, 30, 8, 15, 30, .8, .6)
-    revolveStator(6)
+    rotorTooth()
+    revolveRotor(s.Nm)
+    zoom()
     input()
     deinitFemm()
 
