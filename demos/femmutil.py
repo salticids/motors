@@ -156,13 +156,17 @@ def stator(Nt, Tfrac, rt, ht, bt, hs, hstator, coilBlockLabels):
         pitchTooth = 360 * (Tfrac) / Nt
         phi_plus = phi + pitchTooth / 2.
         phi_minus = phi - pitchTooth / 2.
+
         r = rt
         z = cm.rect(rt, rad(phi))
+
         z1 = cm.rect(rt, rad(phi_minus))
         z1s = cm.rect(rt + ht, rad(phi_minus))
         z2 = cm.rect(rt, rad(phi_plus))
         z2s = cm.rect(rt + ht, rad(phi_plus))
+
         femm.mi_addnode(z.real, z.imag)
+        
         femm.mi_addnode(z1s.real, z1s.imag)
         femm.mi_addnode(z2s.real, z2s.imag)
         femm.mi_drawarc(z1.real, z1.imag, z2.real, z2.imag, pitchTooth, 10)
