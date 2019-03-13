@@ -28,6 +28,15 @@ dm = 5
 mfrac = 0.8
 rotorOOD = False
 rotorSingle = True
+rotorAngle = 0
+
+### POST PARAMETERS
+sweepAngle = 360
+stepsTorque = 10
+
+### SWEEP PARAMETERS
+ragEnd = rag + 5
+ragStep = 1
 
 ### CIRCUIT
 IA = 0

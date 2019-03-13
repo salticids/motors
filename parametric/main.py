@@ -3,6 +3,7 @@ from femmutil import *
 import settings as s
 # elsewhere
 import femm
+import matplotlib.pyplot as plt
 
 # Nt: Number of stator teeth
 # rag: Radius, rotor + airgap
@@ -131,7 +132,7 @@ def revolveStator(Nt):
 
 def generateWindings(Nt, wind = 100):
     s.groupMode = s.statorGroup
-    for i in range(Nt):
+    for i in range(int(Nt)):
         r = ((s.rag + s.wt) + (s.rag + s.wt + s.hs))/2.
         phi = 360./s.Nt
         phii = (360. * i / s.Nt)
@@ -143,13 +144,13 @@ def generateWindings(Nt, wind = 100):
     s.groupMode = -1
 
 def windSingleLayer(Nt, wind = 100, mat = '18 AWG', circuits = 3):
-    for i in range(0, Nt, 2):
+    for i in range(0, int(Nt), 2):
         circ = chr(ord('A') + (int(i/2)%circuits))
         setCircZ(s.statorCoilLabels[2*i], mat, circ, -wind, s.statorGroup)
         setCircZ(s.statorCoilLabels[2*i+1], mat, circ, wind, s.statorGroup)
 
 def windDoubleLayer(Nt, wind = 100, mat = '18 AWG', circuits = 3):
-    for i in range(Nt):
+    for i in range(int(Nt)):
         circ = chr(ord('A') + (i%circuits))
         setCircZ(s.statorCoilLabels[2*i], mat, circ, -wind, s.statorGroup)
         setCircZ(s.statorCoilLabels[2*i+1], mat, circ, wind, s.statorGroup)
@@ -170,7 +171,7 @@ def revolveRotor(Nm):
     # flip every other magnet
     phi = 360./Nm
     r = ((s.rr - s.dm) + (s.rr + s.hm - s.dm))/2.
-    for i in range(Nm):
+    for i in range(int(Nm)):
         if i % 2 == 1:
             phii = i*phi
             setMagnet(r, phii, 'NdFeB 32 MGOe', phii + 180, s.rotorGroup)
@@ -192,6 +193,11 @@ def finish():
     setMat(r, 0, 'Air')
     zoom()
     femm.mi_makeABC()
+
+def reset():
+    clearGroup(0)
+    clearGroup(s.rotorGroup)
+    clearGroup(s.statorGroup)
 
 def initFemm(depth = 50):
     femm.openfemm()
@@ -219,8 +225,28 @@ def updateCircuits():
     femm.mi_modifycircprop('B', 1, s.IB)
     femm.mi_modifycircprop('C', 1, s.IC)
 
+def rotateRotor(angle):
+    rot(angle - s.rotorAngle)
+    s.rotorAngle = angle
+
+def procRotorTorque():
+    femm.mi_saveas('parametric.fem')
+    femm.mi_analyze()
+    femm.mi_loadsolution()
+    femm.mo_groupselectblock(s.rotorGroup)
+    print(femm.mo_blockintegral(22))
+    return femm.mo_blockintegral(22)
+
 def deinitFemm():
     femm.closefemm()
+
+def plot(x, y, show = True):
+    plt.plot(x, y)
+    if show:
+        plt.show()
+
+def plotshow():
+    plt.show()
 
 def main():
     initFemm()

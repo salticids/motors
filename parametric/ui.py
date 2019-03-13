@@ -78,6 +78,7 @@ class UI(BaseWidget):
         self._drawrotortoothb.value = self._drawRotorTooth
         self._hiderotorb = ControlButton('hide rotor')
         self._hiderotorb.value = self._hideRotor
+
         # Finishing
         self._currentA = ControlText('IA:')
         self._currentA.value = str(s.IA)
@@ -90,6 +91,29 @@ class UI(BaseWidget):
         self._currentC.changed_event = self._updateCurrents
         self._finishb = ControlButton('finish')
         self._finishb.value = self._finish
+        self._resetb = ControlButton('reset')
+        self._resetb.value = self._reset
+
+        # Postprocess
+        self._sweepAngle = ControlText('Sweep Angle:')
+        self._sweepAngle.value = str(s.sweepAngle)
+        self._sweepAngle.changed_event = self._updatePost
+        self._sweepStepsTorque = ControlText('Steps:')
+        self._sweepStepsTorque.value = str(s.stepsTorque)
+        self._sweepStepsTorque.changed_event = self._updatePost
+        self._sweepTorqueb = ControlButton('Torque Sweep')
+        self._sweepTorqueb.value = self._torqueSweep
+
+        # Parametric sweep
+        self._sparragEnd = ControlText('end:')
+        self._sparragEnd.value = str(s.ragEnd)
+        self._sparragEnd.changed_event = self._updatePost
+        self._sparragStep = ControlText('step:')
+        self._sparragStep.value = str(s.ragStep)
+        self._sparragStep.changed_event = self._updatePost
+        self._ragTorqueSweepb = ControlButton('Torque Sweep')
+        self._ragTorqueSweepb.value = self._ragTorqueSweep
+
 
         self._formset = [{
             'a:femm': ['_updateinstantcb'],
@@ -112,11 +136,26 @@ class UI(BaseWidget):
             'd:finish': ['_currentA',
                 '_currentB',
                 '_currentC',
-                '_finishb']
+                ('_finishb', '_resetb')],
+            'e:post': ['_sweepAngle',
+                ('_sweepStepsTorque', '_sweepTorqueb')],
+            'f:sweep': [('_sparragEnd', '_sparragStep', '_ragTorqueSweepb')]
         }]
+
+        ### internal parameters
+        self._show = True
+
+  
+
 
     def _updateInstant(self):
         s.updateInstant = self._updateinstantcb.value
+
+    def _updatePost(self):
+        s.sweepAngle = float(self._sweepAngle.value)
+        s.stepsTorque = int(self._sweepStepsTorque.value)
+        s.ragEnd = float(self._sparragEnd.value)
+        s.ragStep = float(self._sparragStep.value)
 
     def _updateRotorSettings(self):
         s.Nm = float(self._parNm.value)
@@ -209,6 +248,37 @@ class UI(BaseWidget):
         main.generateWindings(s.Nt)
         main.windDoubleLayer(s.Nt)
         main.finish()
+    
+    def _reset(self):
+        main.reset()
+        main.statorTooth(s.Nt, s.rag, s.wt, s.bt, s.hs, s.tfrac, s.cfrac, s.wbi)
+        main.rotorTooth(s.Nm, s.rsh, s.rr, s.hm, s.dm, s.mfrac)
+        main.zoom()
+
+    def _torqueSweep(self):
+        totalAngle = s.sweepAngle
+        step = totalAngle / s.stepsTorque
+        angles = []
+        torques = []
+        for i in range(s.stepsTorque):
+            main.rotateRotor(i * step)
+            torques.append(main.procRotorTorque())
+            angles.append(i*step)
+        main.plot(angles, torques, self._show)
+
+    def _ragTorqueSweep(self):
+        self._show = False
+        while(s.rag < s.ragEnd):
+            main.clearGroup(s.statorGroup)
+            main.statorTooth(s.Nt, s.rag, s.wt, s.bt, s.hs, s.tfrac, s.cfrac, s.wbi)
+            main.revolveStator(s.Nt)
+            self._finish()
+            self._torqueSweep()
+            s.rag = s.rag + s.ragStep
+        main.plotshow()
+        self._show = True
+
+          
 
 if __name__ == '__main__':
     import pyforms

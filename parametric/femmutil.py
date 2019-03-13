@@ -80,7 +80,7 @@ def setMagnet(r, phi, mat, magdir, group=0):
     femm.mi_setblockprop(mat, 1, 0, '<None>', magdir, group, 0)
     femm.mi_clearselected()
 
-def rot(r, angle):
+def rot(angle):
     femm.mi_selectgroup(s.rotorGroup)
     femm.mi_moverotate(0, 0, angle)
     femm.mi_clearselected()
