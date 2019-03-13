@@ -41,6 +41,9 @@ class UI(BaseWidget):
         self._parcfrac = ControlText('coil phase fraction: ')
         self._parcfrac.value = str(s.cfrac)
         self._parcfrac.changed_event = self._updateSettings
+        self._parwbi = ControlText('back iron width:')
+        self._parwbi.value = str(s.wbi)
+        self._parwbi.changed_event = self._updateSettings
         # Stator control
         self._drawstatorb = ControlButton('draw stator')
         self._drawstatorb.value = self._drawStator
@@ -75,6 +78,18 @@ class UI(BaseWidget):
         self._drawrotortoothb.value = self._drawRotorTooth
         self._hiderotorb = ControlButton('hide rotor')
         self._hiderotorb.value = self._hideRotor
+        # Finishing
+        self._currentA = ControlText('IA:')
+        self._currentA.value = str(s.IA)
+        self._currentA.changed_event = self._updateCurrents
+        self._currentB = ControlText('IB:')
+        self._currentB.value = str(s.IB)
+        self._currentB.changed_event = self._updateCurrents
+        self._currentC = ControlText('IC:')
+        self._currentC.value = str(s.IC)
+        self._currentC.changed_event = self._updateCurrents
+        self._finishb = ControlButton('finish')
+        self._finishb.value = self._finish
 
         self._formset = [{
             'a:femm': ['_updateinstantcb'],
@@ -85,6 +100,7 @@ class UI(BaseWidget):
                 '_parhs',
                 '_partfrac',
                 '_parcfrac',
+                '_parwbi',
                 ('_drawstatortoothb', '_drawstatorb', '_hidestatorb')],
             'c:rotor': ['_parNm',
                 '_parrsh',
@@ -92,7 +108,11 @@ class UI(BaseWidget):
                 '_parhm',
                 '_pardm',
                 '_parmfrac',
-                ('_drawrotortoothb', '_drawrotorb', '_hiderotorb')]
+                ('_drawrotortoothb', '_drawrotorb', '_hiderotorb')],
+            'd:finish': ['_currentA',
+                '_currentB',
+                '_currentC',
+                '_finishb']
         }]
 
     def _updateInstant(self):
@@ -123,12 +143,13 @@ class UI(BaseWidget):
         s.hs = float(self._parhs.value)
         s.tfrac = float(self._partfrac.value)
         s.cfrac = float(self._parcfrac.value)
+        s.wbi = float(self._parwbi.value)
         s.statorOOD = True
         if s.updateInstant:
             s.statorOOD = False
-            main.clearGroup(0) # overlapping issue 
+            # main.clearGroup(0) # overlapping issue 
             main.clearGroup(s.statorGroup)
-            main.statorTooth(s.Nt, s.rag, s.wt, s.bt, s.hs, s.tfrac, s.cfrac)
+            main.statorTooth(s.Nt, s.rag, s.wt, s.bt, s.hs, s.tfrac, s.cfrac, s.wbi)
             if not s.statorSingle:
                 main.revolveStator(s.Nt)
             main.zoom()
@@ -138,14 +159,14 @@ class UI(BaseWidget):
         if s.statorOOD:
             s.statorOOD = False
             main.clearGroup(s.statorGroup)
-            main.statorTooth(s.Nt, s.rag, s.wt, s.bt, s.hs, s.tfrac, s.cfrac)
+            main.statorTooth(s.Nt, s.rag, s.wt, s.bt, s.hs, s.tfrac, s.cfrac, s.wbi)
         main.revolveStator(s.Nt)
         main.zoom()
         s.statorSingle = False
 
     def _drawStatorTooth(self):
         main.clearGroup(s.statorGroup)
-        main.statorTooth(s.Nt, s.rag, s.wt, s.bt, s.hs, s.tfrac, s.cfrac)
+        main.statorTooth(s.Nt, s.rag, s.wt, s.bt, s.hs, s.tfrac, s.cfrac, s.wbi)
         main.zoom()
         self._drawstatorb.enabled = True # Tooth can be revolved
         s.statorSingle = True
@@ -177,6 +198,17 @@ class UI(BaseWidget):
         main.clearGroup(s.rotorGroup)
         main.zoom()
         self._drawrotorb.enabled = False # Ensure one tooth is drawn first
+
+    def _updateCurrents(self):
+        s.IA = float(self._currentA.value)
+        s.IB = float(self._currentB.value)
+        s.IC = float(self._currentC.value)
+        main.updateCircuits()
+
+    def _finish(self):
+        main.generateWindings(s.Nt)
+        main.windDoubleLayer(s.Nt)
+        main.finish()
 
 if __name__ == '__main__':
     import pyforms

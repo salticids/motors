@@ -25,9 +25,15 @@ def addNode(r, phi):
         femm.mi_setgroup(s.groupMode)
         femm.mi_clearselected()
 
-def addBlockLabel(r, phi):
+def addBlockLabel(r, phi, store = False):
     n = cm.rect(r, rad(phi))
     femm.mi_addblocklabel(n.real, n.imag)
+    if s.groupMode != -1:
+        femm.mi_selectlabel(n.real, n.imag)
+        femm.mi_setgroup(s.groupMode)
+        femm.mi_clearselected()
+    if store != False:
+        store.append(n)
 
 # draw arc using polar coordinates (deg)
 def addArc(r1, phi1, r2, phi2):
@@ -46,7 +52,7 @@ def addLine(r1, phi1, r2, phi2):
     n2 = cm.rect(r2, rad(phi2))
     femm.mi_addsegment(n1.real, n1.imag, n2.real, n2.imag)
     if s.groupMode != -1:
-        n = cm.rect((r1 + r1)/2., rad((phi1 + phi2)/2.))
+        n = cm.rect((r1 + r2)/2., rad((phi1 + phi2)/2.))
         femm.mi_selectsegment(n.real, n.imag)
         femm.mi_setgroup(s.groupMode)
         femm.mi_clearselected()
@@ -61,6 +67,11 @@ def setCirc(r, phi, mat, circuit, turns):
     n = cm.rect(r, rad(phi))
     femm.mi_selectlabel(n.real, n.imag)
     femm.mi_setblockprop(mat, 1, 0, circuit, 0, 0, turns)
+    femm.mi_clearselected()
+
+def setCircZ(n, mat, circuit,  turns, group = 0):
+    femm.mi_selectlabel(n.real, n.imag)
+    femm.mi_setblockprop(mat, 1, 0, circuit, 0, group, turns)
     femm.mi_clearselected()
 
 def setMagnet(r, phi, mat, magdir, group=0):

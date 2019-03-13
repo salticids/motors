@@ -7,18 +7,20 @@ rotorGroup = 1
 statorGroup = 2
 
 ### STATOR PARAMETERS
-Nt = 6
-rag = 30
-wt = 8
+Nt = 6 # number of teeth
+rag = 30 # radius past air gap
+wt = 8 # width of tooth
 bt = 15
 hs = 30
 tfrac = 0.8
 cfrac = 0.6
+wbi = 10 # back iron width
 statorOOD = False # Stator out of date
 statorSingle = True # Draw one single tooth
+statorCoilLabels = []
 
 ### ROTOR PARAMETERS
-Nm = 6
+Nm = 8
 rsh = 5
 rr = 20
 hm = 10
@@ -26,6 +28,11 @@ dm = 5
 mfrac = 0.8
 rotorOOD = False
 rotorSingle = True
+
+### CIRCUIT
+IA = 0
+IB = 0
+IC = 0
 
 # ### MOTOR PARAMETERS
 # Nm = 4 # number of rotor magnets
