@@ -8,7 +8,7 @@ mi_probdef(0, 'millimeters', 'planar', 1.e-8, 50, 30)
 mi_hidegrid()
 mi_saveas('demo1.fem')
 
-points = 7
+points = 10
 angleBetweenPoints = 360 / points
 
 for i in range(points):
