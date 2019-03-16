@@ -7,6 +7,7 @@ class StatorDL(Construct):
 
     class Parameters(Construct.ParameterBase):
         def __init__(self):
+            super().__init__()
             self.Nt = 6     # number of teeth
             self.ri = 30    # inner radius
             self.wt = 10    # width of tooth
@@ -17,7 +18,7 @@ class StatorDL(Construct):
             self.wbi = 10   # width of back iron
             self.turns = 100 # coil windings
             self.statorMat = Construct.Material('Air')
-            self.coilMat = Construct.Material('Air')
+            self.coilMat = Construct.Material('18 AWG')
     
     def __init__(self):
         super().__init__()
@@ -101,8 +102,11 @@ class StatorDL(Construct):
         fm.addLine(r, -phiC/2., r+p.hs, -phiC/2, self.group)
 
     def draw(self):
+        
+        # Revolve StatorDL around origin
         fm.revolve(self.p.Nt, self.group)
 
+        # Add coil labels
         phiStep = 360/self.p.Nt
         phiOfs = phiStep * self.p.cf - 2 # 1 degree in from coil boundary... todo: better math
         r = (self.p.ri + self.p.wt + self.p.ri + self.p.wt + self.p.hs) / 2
