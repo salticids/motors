@@ -19,11 +19,21 @@ class Construct(ABC):
         def __init__(self, matName):
             self.matName = matName
 
+    class Circuit():
+
+        def __init__(self, circName, current):
+            self.circName = circName
+            self.current = current
 
     def __init__(self):
         self.p = False
         self.drawState = 0 # 0 hidden; 1 segment; 2 completed
         self.group = 0
+        self.angle = 0
+
+    @abstractmethod
+    def setup(self):
+        pass
 
     @abstractmethod
     def drawSegment(self):
@@ -35,6 +45,7 @@ class Construct(ABC):
 
     def hide(self):
         fm.clearGroup(self.group)
+        fm.zoom()
 
     @property
     @abstractmethod
@@ -52,10 +63,12 @@ class Construct(ABC):
         elif self.drawState == 1:
             self.hide()
             self.drawSegment()
+            fm.zoom()
         elif self.drawState == 2:
             self.hide()
             self.drawSegment()
             self.draw()
+            fm.zoom()
 
     def testDraw(self):
         self.drawSegment()

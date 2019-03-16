@@ -19,14 +19,25 @@ class StatorDL(Construct):
             self.turns = 100 # coil windings
             self.statorMat = Construct.Material('Air')
             self.coilMat = Construct.Material('18 AWG')
+            self.coilA = Construct.Circuit('A', 0)
+            self.coilB = Construct.Circuit('B', 10)
+            self.coilC = Construct.Circuit('C', 0)
     
     def __init__(self):
         super().__init__()
         self.p = self.Parameters()
         self.group = 4
+        # fm.
+
+    def setup(self):
+        fm.getMat(self.p.statorMat.matName)
+        fm.getMat(self.p.coilMat.matName)
+        fm.makeCircuit(self.p.coilA.circName, self.p.coilA.current)
+        fm.makeCircuit(self.p.coilB.circName, self.p.coilB.current)
+        fm.makeCircuit(self.p.coilC.circName, self.p.coilC.current)
 
     def sanitize(self):
-        while(self.p.Nt % 3 != 0):
+        while(self.p.Nt % 3 != 0 or self.p.Nt < 1):
             self.p.Nt += 1
         self.p.ri = abs(self.p.ri)
         self.p.wt = abs(self.p.wt)
@@ -110,7 +121,7 @@ class StatorDL(Construct):
         phiStep = 360/self.p.Nt
         phiOfs = phiStep * self.p.cf - 2 # 1 degree in from coil boundary... todo: better math
         r = (self.p.ri + self.p.wt + self.p.ri + self.p.wt + self.p.hs) / 2
-        for i in range(self.p.Nt):
+        for i in range(int(self.p.Nt)):
             phi = phiStep * i
             circuit = chr(ord('A')+(i%3))
             n = fm.addBlockLabel(r, phi + phiOfs / 2, self.group)
@@ -128,8 +139,6 @@ class StatorDL(Construct):
 
 if __name__ == '__main__':
     s = StatorDL()
-    # for i in s.p.params():
-    #     print(i, s.p.__dict__[i])
     fm.initFemm()
     s.testDraw()
     fm.zoom()

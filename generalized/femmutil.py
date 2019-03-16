@@ -12,12 +12,14 @@ def initFemm(depth = 50, sm = False, filename = 'test.fem'):
     femm.mi_probdef(0, 'millimeters', 'planar', 1.e-8, depth, 30)
     femm.mi_hidegrid()
     femm.smartmesh(sm)
-    femm.mi_getmaterial('Air')
     femm.mi_saveas(filename)
 
 def closeFemm(filename = 'test.fem'):
     femm.mi_saveas(filename)
     femm.closefemm()
+
+def makeCircuit(name, current = 0, series = 1):
+    femm.mi_addcircprop(name, current, series)
 
 def rad(x):
     return x * math.pi / 180
@@ -27,6 +29,8 @@ def zoom():
     femm.mi_zoomnatural()
 
 def clearGroup(group):
+    if group != 0:
+        clearGroup(0)
     femm.mi_selectgroup(group)
     femm.mi_deleteselected()
     femm.mi_clearselected()
@@ -68,6 +72,9 @@ def addLine(r1, phi1, r2, phi2, group = 0):
     femm.mi_selectsegment(n.real, n.imag)
     femm.mi_setgroup(group)
     femm.mi_clearselected()
+
+def getMat(mat):
+    femm.mi_getmaterial(mat)
 
 def setMat(r, phi, mat, group=0):
     n = cmath.rect(r, rad(phi))
