@@ -45,7 +45,7 @@ class Construct(ABC):
 
     def hide(self):
         fm.clearGroup(self.group)
-        fm.zoom()
+        self.drawState = 0
 
     @property
     @abstractmethod
@@ -73,3 +73,4 @@ class Construct(ABC):
     def testDraw(self):
         self.drawSegment()
         self.draw()
+        

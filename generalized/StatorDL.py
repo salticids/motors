@@ -17,7 +17,7 @@ class StatorDL(Construct):
             self.hs = 10    # height of slot
             self.wbi = 10   # width of back iron
             self.turns = 100 # coil windings
-            self.statorMat = Construct.Material('Air')
+            self.statorMat = Construct.Material('M-27 Steel')
             self.coilMat = Construct.Material('18 AWG')
             self.coilA = Construct.Circuit('A', 0)
             self.coilB = Construct.Circuit('B', 10)
@@ -27,7 +27,6 @@ class StatorDL(Construct):
         super().__init__()
         self.p = self.Parameters()
         self.group = 4
-        # fm.
 
     def setup(self):
         fm.getMat(self.p.statorMat.matName)
@@ -58,64 +57,69 @@ class StatorDL(Construct):
         phiM = phi*p.tf
 
         # draw rotor-facing surface
-        fm.addNode(p.ri, phiM/2., self.group)
-        fm.addNode(p.ri, -phiM/2., self.group)
-        fm.addArc(p.ri, -phiM/2., p.ri, phiM/2., self.group)
+        fm.addNode(p.ri, phiM/2)
+        fm.addNode(p.ri, -phiM/2)
+        fm.addArc(p.ri, -phiM/2., p.ri, phiM/2)
 
         # draw coil-facing surface
         phiRootInt = math.asin((p.bt/2)/(p.ri+p.wt)) * 180 / math.pi
-        fm.addNode(p.ri+p.wt, phiRootInt, self.group)
-        fm.addNode(p.ri+p.wt, phiM/2, self.group)
-        fm.addArc(p.ri+p.wt, phiRootInt, p.ri+p.wt, phiM/2., self.group)
-        fm.addNode(p.ri+p.wt, -phiRootInt, self.group)
-        fm.addNode(p.ri+p.wt, -phiM/2, self.group)
-        fm.addArc(p.ri+p.wt, -phiM/2, p.ri+p.wt, -phiRootInt, self.group)
+        fm.addNode(p.ri+p.wt, phiRootInt)
+        fm.addNode(p.ri+p.wt, phiM/2)
+        fm.addArc(p.ri+p.wt, phiRootInt, p.ri+p.wt, phiM/2)
+        fm.addNode(p.ri+p.wt, -phiRootInt)
+        fm.addNode(p.ri+p.wt, -phiM/2)
+        fm.addArc(p.ri+p.wt, -phiM/2, p.ri+p.wt, -phiRootInt)
 
         # Connect tooth surfaces
-        fm.addLine(p.ri, phiM/2., p.ri+p.wt, phiM/2, self.group)
-        fm.addLine(p.ri, -phiM/2., p.ri+p.wt, -phiM/2, self.group)
+        fm.addLine(p.ri, phiM/2., p.ri+p.wt, phiM/2)
+        fm.addLine(p.ri, -phiM/2., p.ri+p.wt, -phiM/2)
 
         # draw coil-facing stator surface
         r = p.ri + p.wt + p.hs
         phiRootExt = math.asin((p.bt/2)/r) * 180 / math.pi
-        fm.addNode(r, phiRootExt, self.group)
-        fm.addNode(r, phi/2, self.group)
-        fm.addArc(r, phiRootExt, r, phi/2, self.group)
-        fm.addNode(r, -phiRootExt, self.group)
-        fm.addNode(r, -phi/2, self.group)
-        fm.addArc(r, -phi/2, r, -phiRootExt, self.group)
+        fm.addNode(r, phiRootExt)
+        fm.addNode(r, phi/2)
+        fm.addArc(r, phiRootExt, r, phi/2)
+        fm.addNode(r, -phiRootExt)
+        fm.addNode(r, -phi/2)
+        fm.addArc(r, -phi/2, r, -phiRootExt)
 
         # Connect tooth to stator
-        fm.addLine(p.ri+p.wt, phiRootInt, p.ri+p.wt+p.hs, phiRootExt, self.group)
-        fm.addLine(p.ri+p.wt, -phiRootInt, p.ri+p.wt+p.hs, -phiRootExt, self.group)
+        fm.addLine(p.ri+p.wt, phiRootInt, p.ri+p.wt+p.hs, phiRootExt)
+        fm.addLine(p.ri+p.wt, -phiRootInt, p.ri+p.wt+p.hs, -phiRootExt)
 
         # draw back iron boundary
         r = p.ri + p.wt + p.hs + p.wbi
-        fm.addNode(r, phi/2, self.group)
-        fm.addNode(r, -phi/2, self.group)
-        fm.addArc(r, -phi/2, r, phi/2, self.group)
+        fm.addNode(r, phi/2)
+        fm.addNode(r, -phi/2)
+        fm.addArc(r, -phi/2, r, phi/2)
 
         # draw coil surface
         r = p.ri + p.wt
         phiC = p.cf*phi
-        fm.addNode(r, phiC/2, self.group)
-        fm.addNode(r, -phiC/2, self.group)
-        fm.addNode(r+p.hs, phiC/2, self.group)
-        fm.addNode(r+p.hs, -phiC/2, self.group)
+        fm.addNode(r, phiC/2)
+        fm.addNode(r, -phiC/2)
+        fm.addNode(r+p.hs, phiC/2)
+        fm.addNode(r+p.hs, -phiC/2)
         if(p.cf > p.tf): # coil broader than tooth 
-            fm.addArc(r, phiM/2., r, phiC/2, self.group)
-            fm.addArc(r, -phiC/2., r, -phiM/2, self.group)
+            fm.addArc(r, phiM/2., r, phiC/2)
+            fm.addArc(r, -phiC/2., r, -phiM/2)
         elif(p.tf < p.cf): # tooth broader than coil
-            fm.addArc(r, phiC/2., r, phiM/2, self.group)
-            fm.addArc(r, -phiM/2., r, -phiC/2, self.group)
+            fm.addArc(r, phiC/2., r, phiM/2)
+            fm.addArc(r, -phiM/2., r, -phiC/2)
             # note no need for arc if tf == cf
-        fm.addLine(r, phiC/2., r+p.hs, phiC/2, self.group)
-        fm.addLine(r, -phiC/2., r+p.hs, -phiC/2, self.group)
+        fm.addLine(r, phiC/2., r+p.hs, phiC/2)
+        fm.addLine(r, -phiC/2., r+p.hs, -phiC/2)
 
     def draw(self):
-        
+
         # Revolve StatorDL around origin
         fm.revolve(self.p.Nt, self.group)
+
+        # Stator metal label
+        r = (self.p.ri + self.p.wt + self.p.hs + self.p.ri + self.p.wt + self.p.hs + self.p.wbi) / 2
+        fm.addBlockLabel(r, 0)
+        fm.setMat(r, 0, self.p.statorMat.matName)
 
         # Add coil labels
         phiStep = 360/self.p.Nt
@@ -124,10 +128,10 @@ class StatorDL(Construct):
         for i in range(int(self.p.Nt)):
             phi = phiStep * i
             circuit = chr(ord('A')+(i%3))
-            n = fm.addBlockLabel(r, phi + phiOfs / 2, self.group)
-            fm.setCircZ(n, self.p.coilMat.matName, circuit, self.p.turns, self.group)
-            n = fm.addBlockLabel(r, phi - phiOfs / 2, self.group)
-            fm.setCircZ(n, self.p.coilMat.matName, circuit, -(self.p.turns), self.group)
+            n = fm.addBlockLabel(r, phi + phiOfs / 2)
+            fm.setCircZ(n, self.p.coilMat.matName, circuit, self.p.turns)
+            n = fm.addBlockLabel(r, phi - phiOfs / 2)
+            fm.setCircZ(n, self.p.coilMat.matName, circuit, -(self.p.turns))
 
     @property
     def rInner(self):
@@ -139,6 +143,7 @@ class StatorDL(Construct):
 
 if __name__ == '__main__':
     s = StatorDL()
+    fm.femmgroupmode = s.group
     fm.initFemm()
     s.testDraw()
     fm.zoom()
