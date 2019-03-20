@@ -14,7 +14,7 @@ def initFemm(depth = 50, sm = False, filename = 'test.fem'):
     femm.newdocument(0)
     femm.mi_probdef(0, 'millimeters', 'planar', 1.e-8, depth, 30)
     femm.mi_hidegrid()
-    femm.smartmesh(sm)
+    # femm.smartmesh(sm)
     femm.mi_saveas(filename)
 
 def closeFemm(filename = 'test.fem'):

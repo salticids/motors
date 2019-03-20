@@ -26,7 +26,6 @@ class StatorDL(Construct):
     def __init__(self):
         super().__init__()
         self.p = self.Parameters()
-        self.group = 4
 
     def setup(self):
         fm.getMat(self.p.statorMat.matName)

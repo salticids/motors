@@ -21,7 +21,7 @@ class Construct(ABC):
 
     class Circuit():
 
-        def __init__(self, circName, current):
+        def __init__(self, circName, current = 0):
             self.circName = circName
             self.current = current
 
@@ -45,7 +45,6 @@ class Construct(ABC):
 
     def hide(self):
         fm.clearGroup(self.group)
-        self.drawState = 0
 
     @property
     @abstractmethod
@@ -58,6 +57,7 @@ class Construct(ABC):
         pass
 
     def update(self):
+        fm.femmgroupmode = self.group
         if self.drawState == 0:
             pass
         elif self.drawState == 1:
@@ -69,6 +69,7 @@ class Construct(ABC):
             self.drawSegment()
             self.draw()
             fm.zoom()
+        fm.femmgroupmode = 0
 
     def testDraw(self):
         self.drawSegment()

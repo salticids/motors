@@ -8,6 +8,27 @@ import femmutil as fm
 
 qapp = QApplication([])
 
+class SweepRow():
+    def __init__(self, start, stop, step, mutable, param):
+        self.start = start
+        self.state = self.start
+        self.stop = stop
+        self.step = step
+        self.mutable = mutable
+        self.param = param
+
+def mutsweep(rows, f, index=0):
+    row = rows[index]
+    row.state = row.start
+    row.mutable.__dict__[row.param] = row.start
+    while row.state <= row.stop:
+        if index < len(rows)-1:
+            mutsweep(rows, f, index+1)
+        else:
+            f()
+        row.state += row.step
+        row.mutable.__dict__[row.param] += row.step
+
 class FEMMUtil(QMainWindow):
  
     def __init__(self):
@@ -22,6 +43,7 @@ class FEMMUtil(QMainWindow):
         self.sweepFieldStart = False
         self.sweepFieldEnd = False
         self.sweepFieldStep = False
+        self.sweepRows = []
         # self.pmenus = {
         #     'materials': []
         # }
@@ -67,6 +89,7 @@ class FEMMUtil(QMainWindow):
     def cHookHide(self, constrid):
         if self.FEMMState == 1:
             self.constructs[constrid].hide()
+            self.constructs[constrid].drawState = 0
             fm.zoom()
 
 
@@ -219,7 +242,8 @@ class FEMMUtil(QMainWindow):
         fm.analyze()
         window.clear()
         for i in range(len(self.constructs)):
-            window.append('T'+str(i)+': '+str(round(fm.postGetTorque(self.constructs[i].group),4))+'Nm')
+            if self.constructs[i].drawState == 2:
+                window.append('T'+str(i)+': '+str(round(fm.postGetTorque(self.constructs[i].group),4))+'Nm')
 
     def genPostPage(self):
         postPage = QWidget()
@@ -263,12 +287,58 @@ class FEMMUtil(QMainWindow):
         if param == 'angle':
             self.sweepFieldStart.setText(str(self.constructs[cindex].angle))
             self.sweepFieldEnd.setText(str(self.constructs[cindex].angle))
-            self.sweepFieldStep.setText('0')
+            self.sweepFieldStep.setText('1')
 
         else:
             self.sweepFieldStart.setText(str(self.constructs[cindex].p.__dict__[param]))
             self.sweepFieldEnd.setText(str(self.constructs[cindex].p.__dict__[param]))
-            self.sweepFieldStep.setText('0')
+            self.sweepFieldStep.setText('1')
+
+    def sweepAdd(self):
+        cindex = self.sweepBoxConstruct.currentIndex() - 1
+        param = self.sweepBoxParam.currentText()
+        start = float(self.sweepFieldStart.text())
+        end = float(self.sweepFieldEnd.text())
+        step = float(self.sweepFieldStep.text())
+        if param == 'angle':
+            mutable = self.constructs[cindex]
+        else:
+            mutable = self.constructs[cindex].p
+        self.sweepRows.insert(0, SweepRow(start, end, step, mutable, param))
+
+    def sweepMeasure(self):
+        for i in range(len(self.constructs)):
+            self.cHookDraw(i)
+        self.postPrep()
+        fm.analyze()
+        dataEntry = ''
+        for construct in self.constructs:
+            for parameter in construct.p.params():
+                if type(construct.p.__dict__[parameter]) is int or type(construct.p.__dict__[parameter]) is float:
+                    dataEntry += str(construct.p.__dict__[parameter]) + ','
+            dataEntry += str(construct.angle) + ','
+            dataEntry += str(fm.postGetTorque(construct.group)) + ','
+        dataEntry += '\n'
+        with open('data.csv', 'a') as datafile: 
+            datafile.write(dataEntry)
+
+    def sweepStart(self):
+        preheader = ''
+        header = ''
+        for construct in self.constructs:
+            for parameter in construct.p.params():
+                if type(construct.p.__dict__[parameter]) is int or type(construct.p.__dict__[parameter]) is float:
+                    preheader += type(construct).__name__ + ','
+                    header += parameter + ','
+            preheader += 2*(type(construct).__name__ + ',')
+            header += 'angle,torque,'
+        preheader += '\n'
+        header += '\n'
+        with open('data.csv', 'w') as datafile:
+            datafile.write(preheader)
+            datafile.write(header)
+        mutsweep(self.sweepRows, self.sweepMeasure)
+        self.sweepRows = []
 
     def genSweepPage(self):
         sweepPage = QWidget()
@@ -305,10 +375,18 @@ class FEMMUtil(QMainWindow):
         paramBounds.layout.addWidget(self.sweepFieldStep)
         paramBounds.setLayout(paramBounds.layout)
 
-        # button
+        # add button: add sweep to list
+        sweepAddButton = QPushButton('add sweep parameter')
+        sweepAddButton.clicked.connect(self.sweepAdd)
+        # start button: start sweep
+        sweepStartButton = QPushButton('start sweep')
+        sweepStartButton.clicked.connect(self.sweepStart)
+
 
         sweepPage.layout.addWidget(paramSelectForm)
         sweepPage.layout.addWidget(paramBounds)
+        sweepPage.layout.addWidget(sweepAddButton)
+        sweepPage.layout.addWidget(sweepStartButton)
         sweepPage.setLayout(sweepPage.layout)
         return [sweepPage, 'sweep']
 
