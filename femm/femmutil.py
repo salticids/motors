@@ -43,6 +43,16 @@ def postGetTorque(group):
 def rad(x):
     return x * math.pi / 180
 
+def deg(x):
+    return x * 180 / math.pi
+
+# x is complex number
+# returns r, phi pair with phi in degrees
+def polar(x):
+    r, phi = cmath.polar(x)
+    phi = deg(phi)
+    return r, phi
+
 def zoom():
     femm.mi_refreshview()
     femm.mi_zoomnatural()
