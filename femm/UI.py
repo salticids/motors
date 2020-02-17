@@ -181,7 +181,7 @@ class FEMMUtil(QMainWindow):
             newDrawButton.clicked.connect(lambda checked, constrid=len(self.constructs)-1: self.cHookDraw(constrid))
             newButtons.layout.addWidget(newDrawButton)
             # Hide 
-            newHideButton = QPushButton('hide')
+            newHideButton = QPushButton('undraw')
             newHideButton.clicked.connect(lambda checked, constrid=len(self.constructs)-1: self.cHookHide(constrid))
             newButtons.layout.addWidget(newHideButton)
             # Add to page

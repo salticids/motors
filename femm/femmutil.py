@@ -46,6 +46,12 @@ def rad(x):
 def deg(x):
     return x * 180 / math.pi
 
+def vectorsumPP(r1, phi1, r2, phi2):
+    n1 = cmath.rect(r1, rad(phi1))
+    n2 = cmath.rect(r2, rad(phi2))
+    n = n1 + n2
+    return cmath.polar(n)[0], deg(cmath.polar(n)[1])
+
 # x is complex number
 # returns r, phi pair with phi in degrees
 def polar(x):
@@ -68,6 +74,14 @@ def addNode(r, phi, group = -1):
     if group == -1:
         group = femmgroupmode
     n = cmath.rect(r, rad(phi))
+    femm.mi_addnode(n.real, n.imag)
+    femm.mi_selectnode(n.real, n.imag)
+    femm.mi_setgroup(group)
+    femm.mi_clearselected()
+
+def addNodeZ(n, group = -1):
+    if group == -1:
+        group = femmgroupmode
     femm.mi_addnode(n.real, n.imag)
     femm.mi_selectnode(n.real, n.imag)
     femm.mi_setgroup(group)
@@ -96,6 +110,21 @@ def addArc(r1, phi1, r2, phi2, group = -1):
     femm.mi_setgroup(group)
     femm.mi_clearselected()
 
+def addArcZZ(n1, n2, group = -1):
+    if group == -1:
+        group = femmgroupmode
+    r1, phi1 = cmath.polar(n1)
+    r2, phi2 = cmath.polar(n2)
+    femm.mi_addarc(n1.real, n1.imag, n2.real, n2.imag, deg(abs(phi1-phi2)), 10)
+    # select middle of arc for adding group
+    # todo: better guess at point on arc (unpredictable if r1 != r2)
+
+    n = cmath.rect((r1+r2)/2., (phi1+phi2)/2.)
+    femm.mi_selectarcsegment(n.real, n.imag)
+    femm.mi_setgroup(group)
+    femm.mi_clearselected()
+
+
 # draw line using polar coordinates
 def addLine(r1, phi1, r2, phi2, group = -1):
     if group == -1:
@@ -106,6 +135,17 @@ def addLine(r1, phi1, r2, phi2, group = -1):
     # select middle of arc for adding group
     # todo: better guess at point on line (unpredictable if phi1 != phi2)
     n = cmath.rect((r1 + r2)/2., rad((phi1 + phi2)/2.))
+    femm.mi_selectsegment(n.real, n.imag)
+    femm.mi_setgroup(group)
+    femm.mi_clearselected()
+
+# draw line using two complex variables
+def addLineZZ(n1, n2, group = -1):
+    if group == -1:
+        group = femmgroupmode
+    femm.mi_addsegment(n1.real, n1.imag, n2.real, n2.imag)
+    # select middle of arc for adding group
+    n = (n1.real+n2.real)/2 + ((n1.imag+n2.imag)/2)*1j
     femm.mi_selectsegment(n.real, n.imag)
     femm.mi_setgroup(group)
     femm.mi_clearselected()
@@ -149,6 +189,16 @@ def revolve(segments, group):
     femm.mi_selectgroup(group)
     phiStep = 360/segments
     femm.mi_copyrotate(0, 0, phiStep, segments-1)
+    femm.mi_clearselected()
+
+def revolveOnce(angle, group):
+    femm.mi_selectgroup(group)
+    femm.mi_copyrotate(0, 0, angle, 1)
+    femm.mi_clearselected()
+
+def mirrorZZ(n1, n2, group):
+    femm.mi_selectgroup(group)
+    femm.mi_mirror(n1.real, n1.imag, n2.real, n2.imag)
     femm.mi_clearselected()
 
 def rot(angle, group):
