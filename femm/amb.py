@@ -17,6 +17,12 @@ class AMB(Construct):
             self.coilth = 1     # coil thickness
             self.coilm = 1      # coil margin
             self.metal = Construct.Material('M-27 Steel')
+            self.coilMat = Construct.Material('18 AWG')
+            self.turns = 40
+            self.coilA = Construct.Circuit('A', 0)
+            self.coilB = Construct.Circuit('B', 0)
+            self.coilC = Construct.Circuit('C', 0)
+            self.coilD = Construct.Circuit('D', 0)
 
     def __init__(self):
         super().__init__()
@@ -31,6 +37,11 @@ class AMB(Construct):
 
     def setup(self):
         fm.getMat(self.p.metal.matName)
+        fm.getMat(self.p.coilMat.matName)
+        fm.makeCircuit(self.p.coilA.circName, self.p.coilA.current)
+        fm.makeCircuit(self.p.coilB.circName, self.p.coilB.current)
+        fm.makeCircuit(self.p.coilC.circName, self.p.coilC.current)
+        fm.makeCircuit(self.p.coilD.circName, self.p.coilD.current)
 
     def drawSegment(self):
         self.reset()
@@ -184,8 +195,39 @@ class AMB(Construct):
         fm.addArc(self.p.ri - self.p.g, 0, self.p.ri - self.p.g, 180)
         fm.addArc(self.p.ri - self.p.g, 180, self.p.ri - self.p.g, 0)
 
-        for rphi in self.circuits:
-            fm.addBlockLabel(rphi[0], rphi[1])
+        n = fm.addBlockLabel(self.circuits[0][0], self.circuits[0][1])
+        fm.setCircZ(n, self.p.coilMat.matName, 'A', -self.p.turns)
+        n = fm.addBlockLabel(self.circuits[1][0], self.circuits[1][1])
+        fm.setCircZ(n, self.p.coilMat.matName, 'A', self.p.turns)
+        n = fm.addBlockLabel(self.circuits[2][0], self.circuits[2][1])
+        fm.setCircZ(n, self.p.coilMat.matName, 'A', self.p.turns)
+        n = fm.addBlockLabel(self.circuits[3][0], self.circuits[3][1])
+        fm.setCircZ(n, self.p.coilMat.matName, 'A', -self.p.turns)
+        n = fm.addBlockLabel(self.circuits[8][0], self.circuits[8][1])
+        fm.setCircZ(n, self.p.coilMat.matName, 'C', -self.p.turns)
+        n = fm.addBlockLabel(self.circuits[9][0], self.circuits[9][1])
+        fm.setCircZ(n, self.p.coilMat.matName, 'C', self.p.turns)
+        n = fm.addBlockLabel(self.circuits[10][0], self.circuits[10][1])
+        fm.setCircZ(n, self.p.coilMat.matName, 'C', self.p.turns)
+        n = fm.addBlockLabel(self.circuits[11][0], self.circuits[11][1])
+        fm.setCircZ(n, self.p.coilMat.matName, 'C', -self.p.turns)
+        n = fm.addBlockLabel(self.circuits[4][0], self.circuits[4][1])
+        fm.setCircZ(n, self.p.coilMat.matName, 'B', -self.p.turns)
+        n = fm.addBlockLabel(self.circuits[5][0], self.circuits[5][1])
+        fm.setCircZ(n, self.p.coilMat.matName, 'B', self.p.turns)
+        n = fm.addBlockLabel(self.circuits[6][0], self.circuits[6][1])
+        fm.setCircZ(n, self.p.coilMat.matName, 'B', self.p.turns)
+        n = fm.addBlockLabel(self.circuits[7][0], self.circuits[7][1])
+        fm.setCircZ(n, self.p.coilMat.matName, 'B', -self.p.turns)
+        n = fm.addBlockLabel(self.circuits[12][0], self.circuits[12][1])
+        fm.setCircZ(n, self.p.coilMat.matName, 'D', -self.p.turns)
+        n = fm.addBlockLabel(self.circuits[13][0], self.circuits[13][1])
+        fm.setCircZ(n, self.p.coilMat.matName, 'D', self.p.turns)
+        n = fm.addBlockLabel(self.circuits[14][0], self.circuits[14][1])
+        fm.setCircZ(n, self.p.coilMat.matName, 'D', self.p.turns)
+        n = fm.addBlockLabel(self.circuits[15][0], self.circuits[15][1])
+        fm.setCircZ(n, self.p.coilMat.matName, 'D', -self.p.turns)
+
 
     @property
     def rInner(self):
