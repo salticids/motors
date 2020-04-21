@@ -7,15 +7,15 @@ class AMB(Construct):
     class Parameters(Construct.ParameterBase):
         def __init__(self):
             super().__init__()
-            self.ri = 10        # inner radius
-            self.aofs = 20      # offset of one tooth from pole centerline (deg)
+            self.ri = 19.5        # inner radius (mm)
+            self.aofs = 45/2.      # offset of one tooth from pole centerline (deg)
             self.phi = 20
-            self.w = 4          # tooth width
-            self.l = 15         # tooth length
-            self.wbi = 8        # back iron thickness
-            self.g = .1         # air gap
-            self.coilth = 1     # coil thickness
-            self.coilm = 1      # coil margin
+            self.w = 12          # tooth width (mm)
+            self.l = 31.08         # tooth length 
+            self.wbi = 10        # back iron thickness
+            self.g = 2         # air gap
+            self.coilth = 3     # coil thickness
+            self.coilm = 2.88      # coil margin
             self.metal = Construct.Material('M-27 Steel')
             self.coilMat = Construct.Material('18 AWG')
             self.turns = 40
